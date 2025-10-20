@@ -9,12 +9,11 @@ CFLAGS = -D _DEBUG -ggdb3 -std=c++17 -Wall -Wextra -Weffc++ -Waggressive-loop-op
 
 export OBJ_DIR TARGET_DIR SOURCE_DIR CC CFLAGS
 
-include makefiles/assembler.mk
-include makefiles/disassembler.mk
-include makefiles/processor.mk
-include makefiles/png.mk
+include makefiles/server.mk
+include makefiles/client.mk
+include makefiles/updater.mk
 
-all: asm_b dis_b spu_b png_b
+all: srv_b clt_b upd_b
 
 clean:
 	@rm -rf $(OBJ_DIR)

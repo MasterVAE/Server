@@ -1,0 +1,16 @@
+#ifndef SERVER_MANAGER_H_
+#define SERVER_MANAGER_H_
+
+enum ServErr
+{
+    SERV_CORRECT,
+    SOCKET_FAILED,
+    SETSOCKOPT_FAIL,
+    BIND_FAIL,
+    LISTEN_FAIL,
+    SERV_COMMAND_NOT_FOUND
+};
+
+ServErr Host();
+
+#endif // SERVER_MANAGER_H_
