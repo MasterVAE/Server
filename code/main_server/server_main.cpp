@@ -21,6 +21,7 @@ int main(int argc, char* argv[])
     serv.RequestParser = CommandParse;
 
     ServState error = Host(&serv);
+    printf("error %d\n", error);
     
     if(error == SERV_CORRECT) return 0;
 

@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
     serv.RequestParser = CommandParse;
 
     ServState error = Host(&serv);
-    
+
     if(error == SERV_CORRECT) return 0;
 
     return 1;

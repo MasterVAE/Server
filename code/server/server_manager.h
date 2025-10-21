@@ -29,5 +29,6 @@ typedef struct Server
 } Server;
 
 ServState Host(Server* server);
+char* MakeRequest(const char* url, const char* data);
 
 #endif // SERVER_MANAGER_H_

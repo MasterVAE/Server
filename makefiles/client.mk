@@ -1,10 +1,10 @@
-SOURCES_CLIENT = code/client/client_main.cpp
+SOURCES_CLIENT = code/client/client_main.cpp code/server/server_manager.cpp
 OBJECTS_CLIENT := $(addprefix $(OBJ_DIR)/, $(SOURCES_CLIENT:.cpp=.o))
 TARGET_CLIENT = $(TARGET_DIR)/client.out
 
 LIBS = -lcurl
 
-HEADERS_CLIENT = $(wildcard $(SOURCE_DIR)/code/client/*.h) $(wildcard $(SOURCE_DIR)/*.h)
+HEADERS_CLIENT = $(wildcard $(SOURCE_DIR)/code/*.h) $(wildcard $(SOURCE_DIR)/*.h)
 
 $(TARGET_CLIENT): $(OBJECTS_CLIENT) | $(TARGET_DIR)
 	@$(CC) $(CFLAGS) $^ -o $@ $(LIBS)

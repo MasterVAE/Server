@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <curl/curl.h>
 
 #include "server_manager.h"
 
@@ -11,6 +12,7 @@
 
 static ServState HandleRequest(int client_socket);
 static ServState CommandParse(const char* buffer, size_t buffer_len, int socket);
+static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp);
 
 static ServState HandleRequest(Server* serv, int client_socket) 
 {
@@ -23,7 +25,6 @@ static ServState HandleRequest(Server* serv, int client_socket)
         "\r\n";
     
     write(client_socket, response, strlen(response));
-    write(client_socket, "BIBA", strlen("BIBA"));
 
     ServState state = SERV_CORRECT;
 
@@ -45,6 +46,8 @@ static ServState HandleRequest(Server* serv, int client_socket)
 
 ServState Host(Server* server) 
 {
+    printf("Server starting up on port %d\n", server->port);
+
     int server_fd, client_socket;
     struct sockaddr_in address, client_addr;
     socklen_t addrlen = sizeof(client_addr);
@@ -62,7 +65,7 @@ ServState Host(Server* server)
     
     if (listen(server_fd, 10) < 0)  return LISTEN_FAIL;
     
-    printf("Server starting up on port %d\n", server->port);
+    printf("Server started up on port %d\n", server->port);
     
     while (1)
     {
@@ -81,3 +84,73 @@ ServState Host(Server* server)
 
     return SERV_CORRECT;
 }
+
+struct MemoryStruct {
+    char *memory;
+    size_t size;
+};
+
+
+// Callback-функция для записи данных
+static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp) 
+{
+    size_t realsize = size * nmemb;
+    struct MemoryStruct *mem = (struct MemoryStruct *)userp;
+    
+    char *ptr = (char*)realloc(mem->memory, mem->size + realsize + 1);
+    if(ptr == NULL) {
+        printf("Недостаточно памяти\n");
+        return 0;
+    }
+    
+    mem->memory = ptr;
+    memcpy(&(mem->memory[mem->size]), contents, realsize);
+    mem->size += realsize;
+    mem->memory[mem->size] = 0;
+    
+    return realsize;
+}
+
+char* MakeRequest(const char* url, const char* data)
+{
+    CURL *curl;
+    CURLcode res;
+    struct MemoryStruct chunk;
+    
+    chunk.memory = (char*)malloc(1);
+    chunk.size = 0;
+    
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+    curl = curl_easy_init();
+    
+    if(curl) 
+    {
+        curl_easy_setopt(curl, CURLOPT_URL, url);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
+
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data);
+        
+        res = curl_easy_perform(curl);
+        
+        if(res != CURLE_OK) 
+        {
+            fprintf(stderr, "Error: %s\n", curl_easy_strerror(res));
+        }
+        else if(chunk.size > 0)
+        {
+            printf("Response (%zu byte):\n%s\n", chunk.size, chunk.memory);
+        }
+        else
+        {
+            printf("Empty response\n");
+        }
+        
+        curl_easy_cleanup(curl);
+        free(chunk.memory);
+    }
+    
+    curl_global_cleanup();
+    return 0;
+}
+

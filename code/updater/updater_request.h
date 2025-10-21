@@ -3,7 +3,7 @@
 
 #include "../server/server_manager.h"
 
-int UpdateServer();
+ServState UpdateFile(Request* request);
 ServState CommandParse(Request* request);
 
 #endif // UPDATER_REQUEST_H_

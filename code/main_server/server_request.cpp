@@ -1,4 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 #include "../server/server_manager.h"
 #include "server_request.h"
@@ -6,18 +9,30 @@
 ServState Kill(Request* request)
 {
     printf("GET KILL REQUEST");
+
+    char* ans = "Server killed";
+    write(request->client_socket, ans, strlen(ans));
+
     return SERV_HALTED;
 }
 
 ServState Test(Request* request)
 {
     printf("GET TEST REQUEST");
+
+    char* ans = "OK";
+    write(request->client_socket, ans, strlen(ans));
+
     return SERV_CORRECT;
 }
 
 ServState Ask(Request* request)
 {
     printf("GET ASK REQUEST");
+
+    char* ans = "BIBA";
+    write(request->client_socket, ans, strlen(ans));
+
     return SERV_CORRECT;
 }
 
