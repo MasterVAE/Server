@@ -1,10 +1,9 @@
 #include <stdio.h>
-#include <stdlib.h>
 
 #include "../server/server_manager.h"
-#include "updater_request.h"
+#include "server_request.h"
 
-char* password;
+char* password = NULL;
 
 int main(int argc, char* argv[])
 {
@@ -18,7 +17,7 @@ int main(int argc, char* argv[])
 
     Server serv = {};
     serv.password = password;
-    serv.port = 8000;
+    serv.port = 8080;
     serv.RequestParser = CommandParse;
 
     ServState error = Host(&serv);

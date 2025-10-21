@@ -6,24 +6,15 @@
 #include <netinet/in.h>
 
 #include "server_manager.h"
-#include "server_request.h"
 
-#define PORT 8080
 #define BUFFER_SIZE 4096
 
-static ServErr HandleRequest(int client_socket);
-static int CommandParse(const char* buffer, size_t buffer_len);
+static ServState HandleRequest(int client_socket);
+static ServState CommandParse(const char* buffer, size_t buffer_len, int socket);
 
-static ServErr HandleRequest(int client_socket) 
+static ServState HandleRequest(Server* serv, int client_socket) 
 {
     char buffer[BUFFER_SIZE] = {0};
-    
-    ssize_t bytes_read = read(client_socket, buffer, BUFFER_SIZE - 1);
-    if (bytes_read > 0) 
-    {
-        buffer[bytes_read] = '\0';
-        CommandParse(buffer, (size_t)bytes_read);
-    }
     
     const char *response = 
         "HTTP/1.1 200 OK\r\n"
@@ -32,13 +23,27 @@ static ServErr HandleRequest(int client_socket)
         "\r\n";
     
     write(client_socket, response, strlen(response));
-
     write(client_socket, "BIBA", strlen("BIBA"));
+
+    ServState state = SERV_CORRECT;
+
+    ssize_t bytes_read = read(client_socket, buffer, BUFFER_SIZE - 1);
+    if (bytes_read > 0) 
+    {
+        buffer[bytes_read] = '\0';
+        Request request = {};
+        request.buffer = buffer;
+        request.buffer_len = bytes_read;
+        request.client_socket = client_socket;
+        state = serv->RequestParser(&request);
+    }
     
     close(client_socket);
+
+    return state;
 }
 
-ServErr Host() 
+ServState Host(Server* server) 
 {
     int server_fd, client_socket;
     struct sockaddr_in address, client_addr;
@@ -51,15 +56,13 @@ ServErr Host()
     
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons(PORT);
+    address.sin_port = htons(server->port);
     
     if (bind(server_fd, (struct sockaddr*)&address, sizeof(address)) < 0)   return BIND_FAIL;
     
     if (listen(server_fd, 10) < 0)  return LISTEN_FAIL;
     
-    printf("Server started on port %d\n", PORT);
-    printf("Server is listening on all network interfaces\n");
-    printf("Waiting for connections...\n\n");
+    printf("Server starting up on port %d\n", server->port);
     
     while (1)
     {
@@ -70,21 +73,11 @@ ServErr Host()
             continue;
         }
         
-        ServErr error = HandleRequest(client_socket);
+        ServState error = HandleRequest(server, client_socket);
+        if(error != SERV_CORRECT) break;
     }
     
     close(server_fd);
 
     return SERV_CORRECT;
-}
-
-static ServErr CommandParse(const char* buffer, size_t buffer_len)
-{
-    if(buffer_len == 0 || !buffer) return 1;
-
-    if(buffer[0] == 'k') return Kill();
-    if(buffer[0] == 't') return Test();
-    if(buffer[0] == 'r') return Request(buffer, buffer_len);
-
-    return SERV_COMMAND_NOT_FOUND;
 }
