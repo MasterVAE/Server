@@ -38,11 +38,23 @@ ServState Ask(Request* request)
 
 ServState CommandParse(Request* request)
 {
-    if(request->buffer_len < 126 || !request->buffer) return SERV_BUFFER_INVALID;
+    if(!request->buffer) return SERV_BUFFER_INVALID;
 
-    if(request->buffer[125] == 'k') return Kill(request);
-    if(request->buffer[125] == 't') return Test(request);
-    if(request->buffer[125] == 'a') return Ask (request);
+    printf("PARSING: %s\n", request->buffer);
+
+    int i = 0;
+    int enter = 0;
+    for(i = 0; i < request->buffer_len; i++)
+    {
+     
+        //fprintf(stderr, "[%d] %c\n",i, request->buffer[i]);
+        if(request->buffer[i] == '\n') enter++;
+
+        if(enter == 6) break;
+    }
+
+    const char* ans = "Instruction not found";
+    write(request->client_socket, ans, strlen(ans));
 
     return SERV_CORRECT;
 }

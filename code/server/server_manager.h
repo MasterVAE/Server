@@ -13,12 +13,32 @@ enum ServState
     SERV_HALTED
 };
 
+enum FieldType
+{
+    SYSTEM_FIELD,
+    COMMAND_FIELD,
+    FILE_FIELD
+};
+typedef struct Field
+{
+    FieldType type;
+    char* name;
+    char* value;
+    size_t data_size;
+} Field;
+
 typedef struct Request
 {
+    const char* url;
+    int client_socket;
+
+    size_t field_count;
+    Field* fields;
+
     char* buffer;
     size_t buffer_len;
 
-    int client_socket;
+    size_t current_field;
 } Request;
 
 typedef struct Server
@@ -29,6 +49,6 @@ typedef struct Server
 } Server;
 
 ServState Host(Server* server);
-char* MakeRequest(const char* url, const char* data);
+char* MakeRequest(Request* request);
 
 #endif // SERVER_MANAGER_H_

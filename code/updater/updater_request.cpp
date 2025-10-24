@@ -6,58 +6,63 @@
 #include "updater_request.h"
 #include "../server/server_manager.h"
 
-char* old_version = NULL;
-
-const char* server_filename = "serv_updated.out";
-const char* server_address = "http://93.175.1.127:8080";
-
-const int request_start_offset = 125;
-
-static int CreateFile(const char* filename);
-static int LaunchFile();
-static int VerifyFile();
 static ServState Kill(Request* request);
-
+static ServState UpdateFile(Request* request);
 
 static ServState Kill(Request* request)
 {
-    printf("GET KILL REQUEST");
+    printf("GET KILL REQUEST\n");
 
-    char* ans = "Server killed";
+    const char* ans = "Server halted";
     write(request->client_socket, ans, strlen(ans));
 
     return SERV_HALTED;
 }
-ServState UpdateFile(Request* request)
+static ServState UpdateFile(Request* request)
 { 
-    char* filename; 
-    size_t filename_size;
+    printf("GET UPDATE REQUEST\n");
 
-    char* file;
-    size_t file_size;
+    printf("Updating file -> %s\n", request->fields[request->current_field].value);
+    const char* filename = "out.txt"; 
 
-    filename = request->buffer + request_start_offset + 1;
-    filename_size = strlen(filename);
+    char* file = request->fields[request->current_field + 1].value;
+    size_t file_size = request->fields[request->current_field + 1].data_size;
 
-    file_size = request->buffer_len - request_start_offset - filename_size - 2;
-    file = request->buffer + request_start_offset + filename_size + 2;
+    printf("FILENAME: %s\n", filename);
+    printf("FILE_SIZE: %lu\n", file_size);
 
     FILE* new_file = fopen(filename, "w+");
-
     fwrite(file, file_size, 1, new_file);
-
     fclose(new_file);
     
+    const char* ans = "File updated";
+    write(request->client_socket, ans, strlen(ans));
+
     return SERV_CORRECT;
 }
 
-
 ServState CommandParse(Request* request)
 {
-    if(request->buffer_len <= request_start_offset || !request->buffer) return SERV_BUFFER_INVALID;
+    for(request->current_field = 0; request->current_field < request->field_count; request->current_field++)
+    {
+        Field* f = &request->fields[request->current_field];
+        if(!strcmp(f->name, "command"))
+        {
+            if(!f->value) return SERV_CORRECT;
 
-    if(request->buffer[request_start_offset] == 'u') return UpdateFile(request);
-    if(request->buffer[request_start_offset] == 'k') return Kill(request);
+            if(!strcmp(f->value, "kill"))
+            {
+                return Kill(request);
+            }
+            if(!strcmp(f->value, "update"))
+            {
+                return UpdateFile(request);
+            }
+        }
+    }
+
+    const char* ans = "Instruction not found";
+    write(request->client_socket, ans, strlen(ans));
 
     return SERV_CORRECT;
 }
