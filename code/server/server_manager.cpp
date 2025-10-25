@@ -57,7 +57,7 @@ static ServState HandleRequest(Server* serv, int client_socket)
 
 ServState Host(Server* server) 
 {
-    printf("Server starting up on port %d\n", server->port);
+    printf("Server trying to start on port %d\n", server->port);
 
     int server_fd, client_socket;
     struct sockaddr_in address, client_addr;
@@ -227,7 +227,7 @@ static char* SkipLines(char* string, size_t lines)
 //FIXME проверка что прилетел мим
 static void RequestBufferParse(Request* request)
 {
-    printf("\n\nPARSING:\n%s\n\n\n", request->buffer);
+    //printf("\n\nPARSING:\n%s\n\n\n", request->buffer);
     
     char* current_buffer = SkipLines(request->buffer, 7);
     current_buffer += 38;
@@ -271,11 +271,23 @@ static void RequestBufferParse(Request* request)
         {
             current_buffer += len + 1;
             current_buffer = SkipLines(current_buffer, 2);
+
             size_t file_size = 0;
             sscanf(current_buffer, "%lu", &file_size);
             printf("filesize: %lu\n", file_size);
             request->fields[i].data_size = file_size;
-            current_buffer = SkipLines(current_buffer, 5);
+
+            current_buffer = SkipLines(current_buffer, 2);
+            current_buffer += 55;
+
+            len = my_strlen(current_buffer);
+            current_buffer[len] = '\0';
+
+            request->fields[i].name = (char*)calloc(len + 1, sizeof(char));
+
+            strcpy(request->fields[i].name, current_buffer);
+            current_buffer += len + 1;
+            current_buffer = SkipLines(current_buffer, 3);
 
             char* file_data = (char*)calloc(file_size, sizeof(char));
             memcpy(file_data, current_buffer, file_size);

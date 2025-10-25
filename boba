@@ -1,0 +1,18 @@
+nohup: ignoring input
+[36mINFO[0m[17:44:27] Welcome to Tuna                              
+[36mINFO[0m[17:44:28] Account: voilov07@gmail.com (Paid till 22.11.2025) 
+[36mINFO[0m[17:44:28] Forwarding tcp://ru.tuna.am:24758 -> 127.0.0.1:8000 
+[36mINFO[0m[17:47:56] Failed to dial remote connection: dial tcp 127.0.0.1:8000: connect: connection refused 
+[36mINFO[0m[17:49:08] Failed to dial remote connection: dial tcp 127.0.0.1:8000: connect: connection refused 
+[31mERRO[0m[18:38:05] GET https://api.tuna.am/v1/internal/cli/tunnels/1179618 request failed: Get "https://api.tuna.am/v1/internal/cli/tunnels/1179618": dial tcp: lookup api.tuna.am on [::1]:53: read udp [::1]:40471->[::1]:53: read: connection refused 
+[31mERRO[0m[18:38:06] GET https://api.tuna.am/v1/internal/cli/tunnels/1179618 request failed: Get "https://api.tuna.am/v1/internal/cli/tunnels/1179618": dial tcp: lookup api.tuna.am on [::1]:53: read udp [::1]:42194->[::1]:53: read: connection refused 
+[31mERRO[0m[18:38:08] GET https://api.tuna.am/v1/internal/cli/tunnels/1179618 request failed: Get "https://api.tuna.am/v1/internal/cli/tunnels/1179618": dial tcp: lookup api.tuna.am on [::1]:53: read udp [::1]:42122->[::1]:53: read: connection refused 
+[31mERRO[0m[18:38:08] GET https://api.tuna.am/v1/internal/cli/tunnels/1179618 request failed: Get "https://api.tuna.am/v1/internal/cli/tunnels/1179618": dial tcp: lookup api.tuna.am on [::1]:53: read udp [::1]:32863->[::1]:53: read: connection refused 
+[31mERRO[0m[18:38:09] GET https://api.tuna.am/v1/internal/cli/tunnels/1179618 request failed: Get "https://api.tuna.am/v1/internal/cli/tunnels/1179618": dial tcp: lookup api.tuna.am on [::1]:53: read udp [::1]:42541->[::1]:53: read: connection refused 
+[31mFATA[0m[18:38:11] Tunnel not active                            
+nohup: ignoring input
+[36mINFO[0m[22:05:52] Welcome to Tuna                              
+[36mINFO[0m[22:05:53] Account: voilov07@gmail.com (Paid till 22.11.2025) 
+[36mINFO[0m[22:05:53] Forwarding tcp://ru.tuna.am:26444 -> 127.0.0.1:8000 
+[36mINFO[0m[22:29:42] SSH forward 127.0.0.1:8000-node.ru.tuna.am:443 - data transfer failed: writeto tcp 127.0.0.1:34872->127.0.0.1:8000: read tcp 127.0.0.1:34872->127.0.0.1:8000: read: connection reset by peer 
+[36mINFO[0m[22:29:42] SSH forward 127.0.0.1:8000-node.ru.tuna.am:443 - data transfer failed: readfrom tcp 127.0.0.1:34872->127.0.0.1:8000: write tcp 127.0.0.1:34872->127.0.0.1:8000: write: broken pipe 

@@ -40,7 +40,7 @@ ServState CommandParse(Request* request)
 {
     if(!request->buffer) return SERV_BUFFER_INVALID;
 
-    printf("PARSING: %s\n", request->buffer);
+    //printf("PARSING: %s\n", request->buffer);
 
     int i = 0;
     int enter = 0;
@@ -53,8 +53,8 @@ ServState CommandParse(Request* request)
         if(enter == 6) break;
     }
 
-    const char* ans = "Instruction not found";
-    write(request->client_socket, ans, strlen(ans));
+    //const char* ans = "Instruction not found";
+    //write(request->client_socket, ans, strlen(ans));
 
     return SERV_CORRECT;
 }
