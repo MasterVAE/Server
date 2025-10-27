@@ -49,21 +49,17 @@ void MakeUpdateRequest(Args* args)
     char* filename = args->argv[2];
 
     Request request = {};
-    request.field_count = 3;
+    request.field_count = 2;
     request.fields = MakeFields(request.field_count);
     request.url = weburl_upd;
 
     request.fields[0].type = SYSTEM_FIELD;
     strcpy(request.fields[0].name, "argc");
-    strcpy(request.fields[0].value, "2");
+    strcpy(request.fields[0].value, "1");
 
     request.fields[1].type = COMMAND_FIELD;
     strcpy(request.fields[1].name,"command");
     strcpy(request.fields[1].value, "update");
-
-    request.fields[2].type = FILE_FIELD;
-    strcpy(request.fields[2].name, "file");
-    strcpy(request.fields[2].value, filename);
 
     printf("MAKING REQUEST:\n");
 

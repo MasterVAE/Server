@@ -44,22 +44,11 @@ static ServState Kill(Request* request)
 }
 static ServState UpdateFile(Request* request)
 { 
-    printf("GET UPDATE REQUEST\n");
-
-    printf("Updating file -> %s\n", request->fields[request->current_field].value);
-    const char* filename = "out.txt"; 
-
-    char* file = request->fields[request->current_field + 1].value;
-    size_t file_size = request->fields[request->current_field + 1].data_size;
-
-    printf("FILENAME: %s\n", filename);
-    printf("FILE_SIZE: %lu\n", file_size);
-
-    FILE* new_file = fopen(filename, "w+");
-    fwrite(file, file_size, 1, new_file);
-    fclose(new_file);
+    printf("GET UPDATE REQUEST\File updatedn");
     
-    const char* ans = "File updated";
+    system("bash /home/hobie/projects/Asteroid_miners/update.sh");
+
+    const char* ans = "Website updated";
     write(request->client_socket, ans, strlen(ans));
 
     return SERV_CORRECT;
